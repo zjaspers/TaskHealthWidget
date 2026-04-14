@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard</title>
+    <title>Task Score Widget</title>
     <style>
         * {
             margin: 0;
@@ -14,279 +14,331 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
             background: #f8f9fa;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
  
-        .dashboard-container {
-            max-width: 680px;
-            margin: 0 auto;
+        .score-widget {
+            max-width: 480px;
+            margin: 16px auto;
             background: white;
             border-radius: 16px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
  
-        .header {
-            padding: 32px 32px 24px;
-            background: linear-gradient(to bottom, #ffffff, #fafbfc);
-            border-bottom: 1px solid #e5e7eb;
-        }
- 
-        .score-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 48px;
-            margin-bottom: 24px;
-        }
- 
-        .score-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
- 
-        .score-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
- 
-        .score-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
- 
-        .score-text {
-            font-size: 15px;
-            font-weight: 600;
-            color: #111827;
-        }
- 
-        .heart-icon {
-            font-size: 28px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-        }
- 
-        .heart-green {
-            color: #059669;
-        }
- 
-        .heart-yellow {
-            color: #f59e0b;
-        }
- 
-        .date-display {
-            text-align: center;
-            font-size: 18px;
-            font-weight: 600;
-            color: #111827;
-            padding: 16px 0 8px;
-        }
- 
-        .content {
-            padding: 0;
-        }
- 
-        .section-header {
-            background: #059669;
+        .widget-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
-            padding: 16px 32px;
-            font-size: 20px;
+        }
+ 
+        .widget-title {
+            font-size: 18px;
             font-weight: 600;
             letter-spacing: -0.2px;
         }
  
-        .info-table {
-            width: 100%;
+        .widget-subtitle {
+            font-size: 13px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 4px;
         }
  
-        .info-row {
+        .scores-container {
+            padding: 24px;
             display: grid;
-            grid-template-columns: 1fr auto auto;
-            align-items: center;
-            padding: 20px 32px;
-            gap: 24px;
-            border-bottom: 1px solid #e5e7eb;
-            transition: background-color 0.15s ease;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
  
-        .info-row:hover {
-            background-color: #f9fafb;
+        .score-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
         }
  
-        .info-row:last-child {
-            border-bottom: none;
+        .score-card:hover {
+            border-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
         }
  
-        .info-row.overdue {
-            background-color: #fef2f2;
+        .score-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
  
-        .info-row.overdue:hover {
-            background-color: #fee2e2;
+        .score-value {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
         }
  
-        .info-title {
-            font-size: 15px;
+        .score-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+ 
+        .task-health .score-value {
+            color: #059669;
+        }
+ 
+        .task-health .score-icon {
+            color: #059669;
+        }
+ 
+        .store-score .score-value {
+            color: #f59e0b;
+        }
+ 
+        .store-score .score-icon {
+            color: #f59e0b;
+        }
+ 
+        .score-subtitle {
+            font-size: 13px;
+            color: #6b7280;
             font-weight: 500;
-            color: #111827;
-            line-height: 1.5;
         }
  
-        .info-title.overdue-text {
+        .score-percentage {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+ 
+        .positive {
+            color: #059669;
+        }
+ 
+        .negative {
             color: #dc2626;
         }
  
-        .priority-badge {
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            min-width: 80px;
-            text-align: center;
+        .neutral {
+            color: #6b7280;
         }
  
-        .priority-high {
-            background: #fef3c7;
-            color: #92400e;
+        .details-section {
+            padding: 0 24px 24px;
         }
  
-        .priority-normal {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
- 
-        .priority-low {
-            background: #dbeafe;
-            color: #1e40af;
-        }
- 
-        .action-button {
-            padding: 10px 24px;
-            background: #059669;
-            color: white;
-            border: none;
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f9fafb;
             border-radius: 8px;
+            margin-bottom: 8px;
+            transition: background 0.15s ease;
+        }
+ 
+        .detail-row:hover {
+            background: #f3f4f6;
+        }
+ 
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+ 
+        .detail-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+ 
+        .detail-value {
             font-size: 14px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            color: #111827;
         }
  
-        .action-button:hover {
-            background: #047857;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
         }
  
-        .action-button:active {
-            transform: translateY(0);
+        .status-good {
+            background: #059669;
         }
  
-        /* Responsive adjustments */
-        @media (max-width: 640px) {
-            .dashboard-container {
+        .status-warning {
+            background: #f59e0b;
+        }
+ 
+        .status-critical {
+            background: #dc2626;
+        }
+ 
+        .refresh-info {
+            padding: 16px 24px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+ 
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+ 
+            .score-widget {
+                margin: 0;
                 border-radius: 0;
+                min-height: 100vh;
             }
  
-            .header {
-                padding: 24px 20px 20px;
+            .widget-header {
+                padding: 20px 16px;
             }
  
-            .score-section {
-                gap: 32px;
-            }
- 
-            .section-header {
-                padding: 14px 20px;
-                font-size: 18px;
-            }
- 
-            .info-row {
+            .scores-container {
                 grid-template-columns: 1fr;
-                padding: 16px 20px;
+                padding: 20px 16px;
                 gap: 12px;
             }
- 
-            .info-title {
-                grid-column: 1;
+            
+            .score-card {
+                padding: 20px;
             }
  
-            .priority-badge {
-                grid-column: 1;
-                justify-self: start;
+            .details-section {
+                padding: 0 16px 20px;
             }
  
-            .action-button {
-                grid-column: 1;
-                width: 100%;
+            .detail-row {
+                padding: 12px 12px;
+            }
+ 
+            .refresh-info {
+                padding: 12px 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="header">
-            <div class="score-section">
-                <div class="score-item">
-                    <div class="score-label">Employee's score</div>
-                    <div class="score-display">
-                        <span class="score-text">Employee</span>
-                        <span class="heart-icon heart-green">♥</span>
-                    </div>
-                </div>
-                <div class="score-item">
-                    <div class="score-label">Store score</div>
-                    <div class="score-display">
-                        <span class="score-text">Store</span>
-                        <span class="heart-icon heart-yellow">♥</span>
-                    </div>
-                </div>
-            </div>
-            <div class="date-display">2025-12-15 Monday</div>
+    <div class="score-widget">
+        <div class="widget-header">
+            <div class="widget-title">Task & Store Performance</div>
+            <div class="widget-subtitle">Real-time scoring metrics</div>
         </div>
  
-        <div class="content">
-            <div class="section-header">My information</div>
-            <div class="info-table">
-                <div class="info-row">
-                    <div class="info-title">New document in IKIDokas</div>
-                    <div class="priority-badge priority-high">High</div>
-                    <button class="action-button">Review</button>
-                </div>
-                <div class="info-row">
-                    <div class="info-title">Changes in HQ</div>
-                    <div class="priority-badge priority-normal">Normal</div>
-                    <button class="action-button">Review</button>
-                </div>
-                <div class="info-row overdue">
-                    <div class="info-title overdue-text">New IKI store in Vilnius (overdue)</div>
-                    <div class="priority-badge priority-low">Low</div>
-                    <button class="action-button">Review</button>
-                </div>
+        <div class="scores-container">
+            <div class="score-card task-health">
+                <div class="score-label">Task Health</div>
+                <div class="score-icon">✓</div>
+                <div class="score-value" id="taskHealthScore">92</div>
+                <div class="score-subtitle">Health Score</div>
+                <div class="score-percentage positive" id="taskHealthTrend">↑ 5% vs last week</div>
             </div>
+ 
+            <div class="score-card store-score">
+                <div class="score-label">Store Score</div>
+                <div class="score-icon">★</div>
+                <div class="score-value" id="storeScore">88</div>
+                <div class="score-subtitle">Overall Rating</div>
+                <div class="score-percentage positive" id="storeScoreTrend">↑ 3% vs last week</div>
+            </div>
+        </div>
+ 
+        <div class="details-section">
+            <div class="detail-row">
+                <div class="detail-label">
+                    <span class="status-indicator status-good"></span>
+                    Tasks Completed
+                </div>
+                <div class="detail-value" id="tasksCompleted">47/50</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">
+                    <span class="status-indicator status-warning"></span>
+                    Tasks In Progress
+                </div>
+                <div class="detail-value" id="tasksInProgress">3</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">
+                    <span class="status-indicator status-good"></span>
+                    On-Time Completion
+                </div>
+                <div class="detail-value" id="onTimeRate">94%</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">
+                    <span class="status-indicator status-good"></span>
+                    Team Compliance
+                </div>
+                <div class="detail-value" id="complianceRate">96%</div>
+            </div>
+        </div>
+ 
+        <div class="refresh-info">
+            Last updated: <span id="lastUpdated">Just now</span>
         </div>
     </div>
  
     <script>
-        // Add click handlers for buttons
-        document.querySelectorAll('.action-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const row = this.closest('.info-row');
-                const title = row.querySelector('.info-title').textContent;
-                console.log('Review clicked for:', title);
-                // Add your WorkJam navigation or action logic here
-                alert('Opening: ' + title);
-            });
-        });
+        // Sample function to update scores dynamically
+        function updateScores(taskHealth, storeScore, metrics) {
+            // Update main scores
+            document.getElementById('taskHealthScore').textContent = taskHealth;
+            document.getElementById('storeScore').textContent = storeScore;
+            
+            // Update metrics if provided
+            if (metrics) {
+                if (metrics.tasksCompleted) {
+                    document.getElementById('tasksCompleted').textContent = metrics.tasksCompleted;
+                }
+                if (metrics.tasksInProgress) {
+                    document.getElementById('tasksInProgress').textContent = metrics.tasksInProgress;
+                }
+                if (metrics.onTimeRate) {
+                    document.getElementById('onTimeRate').textContent = metrics.onTimeRate + '%';
+                }
+                if (metrics.complianceRate) {
+                    document.getElementById('complianceRate').textContent = metrics.complianceRate + '%';
+                }
+            }
+            
+            // Update timestamp
+            document.getElementById('lastUpdated').textContent = 'Just now';
+        }
+ 
+        // Example: Update scores from WorkJam data
+        // This would connect to your WorkJam scoring API
+        function fetchWorkJamScores() {
+            // Replace with actual WorkJam API call
+            // fetch('/api/workjam/scores')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         updateScores(data.taskHealth, data.storeScore, data.metrics);
+            //     });
+            
+            console.log('Ready to fetch WorkJam scores');
+        }
+ 
+        // Auto-refresh every 5 minutes
+        setInterval(fetchWorkJamScores, 300000);
+ 
+        // Initialize
+        fetchWorkJamScores();
     </script>
 </body>
 </html>
